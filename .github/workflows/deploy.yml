@@ -18,7 +18,10 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm i
+        run: npm ci
+
+      - name: Sync SvelteKit
+        run: npm run prepare
 
       - name: build
         env:
