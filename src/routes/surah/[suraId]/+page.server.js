@@ -1,4 +1,4 @@
-import { surah, db } from '$lib/index.js';
+import { chapters, verses } from '$lib/data.js';
 import { error } from '@sveltejs/kit';
 
 /**
@@ -25,20 +25,18 @@ export async function load({ params }) {
 
 	try {
 		// Get chapter info
-		const chapterStmt = db.prepare('SELECT id, name_simple, name_arabic FROM chapters WHERE id = ?');
-		const chapter = chapterStmt.get(suraId);
+		const chapter = chapters.find(c => c.id === suraId);
 		
 		if (!chapter) {
 			throw error(404, 'Surah not found');
 		}
 
 		// Get verses for this surah
-		const versesStmt = surah.prepare('SELECT sura, ayah, text FROM verses WHERE sura = ? ORDER BY ayah');
-		const verses = /** @type {Verse[]} */ (versesStmt.all(suraId));
+		const surahVerses = verses[suraId] || [];
 
 		return {
-			chapter: /** @type {Chapter} */ (chapter),
-			verses: verses,
+			chapter: chapter,
+			verses: surahVerses,
 			error: null
 		};
 	} catch (/** @type {unknown} */ err) {
